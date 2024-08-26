@@ -1,49 +1,31 @@
 import express from 'express';
+import path from 'path';
 
 const app = express();
 const port = 3000;
 
+// Middleware to parse URL-encoded bodies
+app.use(express.urlencoded({ extended: true }));
+
+// Serve static files from the "public" directory
+app.use(express.static(path.join(__dirname, 'public')));
+
 app.get('/', (req, res) => {
-  const message = "Hello Mr. Great!";
-  
-  // Send the response with HTML and CSS to center and style the message and add a text box
-  res.send(`
-    <html>
-      <head>
-        <style>
-          body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #fff; /* Optional: Set background color */
-          }
-          h1 {
-            font-size: 48px; /* Big font size */
-            color: black; /* Black color */
-            font-weight: bold; /* Bold text */
-            margin: 0;
-          }
-          input[type="text"] {
-            margin-top: 20px;
-            padding: 10px;
-            font-size: 24px;
-            border: 2px solid #000;
-            border-radius: 5px;
-            width: 300px;
-            text-align: center;
-          }
-        </style>
-      </head>
-      <body>
-        <h1>${message}</h1>
-        <input type="text" placeholder="Go on Mr., say it">
-      </body>
-    </html>
-  `);
+  res.sendFile(path.join(__dirname, 'public/index.html'));
+});
+
+app.post('/calculate', (req, res) => {
+  // Parse the input values as floating-point numbers
+  const principal = parseFloat(req.body.principal);
+  const rate = parseFloat(req.body.rate); // This is the percentage
+  const time = parseFloat(req.body.time);
+
+  // Calculate the interest and total amount
+  const interest = (principal * rate * time) / 100;
+  const total = principal + interest;
+
+  // Send the result back as JSON
+  res.json({ interest, total });
 });
 
 app.listen(port, () => {
