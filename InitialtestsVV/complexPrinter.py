@@ -1,29 +1,56 @@
-# Function to take a string of numbers and sort them
-def sort_numbers_string(numbers_string):
-    # Split the string into a list of numbers
-    numbers_list = numbers_string.split()
-    # Convert each number to an integer
-    numbers_list = [int(num) for num in numbers_list]
-    # Sort the list of numbers
-    sorted_numbers = sorted(numbers_list)
-    # Convert the sorted numbers back to a string
-    return ' '.join(str(num) for num in sorted_numbers)
+import xml.etree.ElementTree as ET
+import csv
+import os
 
-# Sample string execution
-sample_string = "5 2 8 1 9 3"
-print("Original string:", sample_string)
-sorted_string = sort_numbers_string(sample_string)
-print("Sorted string:", sorted_string)
-import random
+def process_pom(input_pom_path, output_folder, csv_file_path):
+    # Parse the input pom.xml file
+    tree = ET.parse(input_pom_path)
+    root = tree.getroot()
 
-def jumble_sorted_numbers(sorted_string):
-    # Split the sorted string into a list of numbers
-    sorted_list = sorted_string.split()
-    # Shuffle the list of numbers
-    random.shuffle(sorted_list)
-    # Convert the jumbled list back to a string
-    return ' '.join(sorted_list)
+    # Define the XML namespace
+    namespace = {'xmlns': 'http://maven.apache.org/POM/4.0.0'}
 
-# Example usage of the jumble function
-jumbled_string = jumble_sorted_numbers(sorted_string)
-print("Jumbled string:", jumbled_string)
+    # Find all dependencies
+    dependencies = root.findall('.//xmlns:dependency', namespace)
+
+    # Prepare CSV data
+    csv_data = []
+
+    # Process each dependency
+    for dependency in dependencies:
+        group_id = dependency.find('xmlns:groupId', namespace)
+        artifact_id = dependency.find('xmlns:artifactId', namespace)
+        version = dependency.find('xmlns:version', namespace)
+
+        if group_id is not None and artifact_id is not None:
+            # Add to CSV data
+            csv_data.append({
+                'name': f"{group_id.text}:{artifact_id.text}",
+                'version': version.text if version is not None else 'N/A'
+            })
+
+        # Comment out the version tag if it exists
+        if version is not None:
+            version.text = f"<!--{version.text}-->"
+
+    # Write modified pom.xml to output folder
+    output_pom_path = os.path.join(output_folder, 'pom.xml')
+    tree.write(output_pom_path, encoding='utf-8', xml_declaration=True)
+
+    # Write CSV file
+    with open(csv_file_path, 'w', newline='') as csvfile:
+        fieldnames = ['name', 'version']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        for row in csv_data:
+            writer.writerow(row)
+
+# Example usage
+input_pom_path = 'path/to/input/pom.xml'
+output_folder = 'path/to/output/folder'
+csv_file_path = 'path/to/output/dependencies.csv'
+
+process_pom(input_pom_path, output_folder, csv_file_path)
+
+def admit_guilt():
+    print("I admit I am guilty")
