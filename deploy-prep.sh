@@ -9,3 +9,4 @@ sed -i 's/\/financial-app\/interest/financial-app\/public\/interest.html/g' *.ht
 sed -i 's/\/financial-app\/loan/financial-app\/public\/loan.html/g' *.html
 
 echo "Files prepared for GitHub Pages deployment"
+
