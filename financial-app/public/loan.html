@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Amortization Calculator</title>
+    <link rel="stylesheet" href="financial-app/public/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Loan Amortization Calculator</h2>
+        <form id="loanForm">
+            <input type="number" step="0.01" name="loanAmount" placeholder="Loan Amount" required>
+            <input type="number" step="0.01" name="interestRate" placeholder="Interest Rate (%)" required>
+            <input type="number" step="0.01" name="loanTerm" placeholder="Term (Years)" required>
+            <input type="number" step="0.01" name="downPayment" placeholder="Down Payment (%)" required>
+            <button type="submit" class="styled-button">Calculate</button>
+        </form>
+        <div id="loanResult" class="result-window"></div>
+    </div>
+    <script src="financial-app/public/loan.js"></script>
+</body>
+</html>

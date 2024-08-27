@@ -1,0 +1,35 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.BIN/
+# Linux
+.Trash-*
+# Node.js dependencies
+node_modules/
+# Python
+__pycache__/
+*.py[cod]
+venv/
+# Java
+*.class
+*.jar
+# Logs and databases
+*.log
+*.sql
+# Editor and IDE files
+.idea/
+.vscode/
+# Compiled files
+*.o
+*.so
+# Archive files
+*.zip
+*.tar.gz
+# System files
+*.bak
+*.tmp
