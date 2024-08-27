@@ -4,7 +4,8 @@
   "description": "Financial calculator web application",
   "main": "index.ts",
   "scripts": {
-    "start": "ts-node index.ts"
+    "start": "ts-node index.ts",
+    "build": "node build.js"
   },
   "keywords": [],
   "author": "",
