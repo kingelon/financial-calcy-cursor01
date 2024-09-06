@@ -1,0 +1,24 @@
+1. Shell Script (create-vms-GCP.sh)
+Purpose: Automates the creation of VMs and checks for or creates firewall rules based on the configuration in config.cfg.
+
+Key Actions:
+
+Tries to create the VM in each zone listed in config.cfg.
+If a VM is created, it checks and sets up firewall rules for HTTP/HTTPS.
+Skips creating rules if they already exist.
+
+2. Steps to Execute:
+Ensure gcloud is configured:
+
+Make sure you have run gcloud init to configure your project and authentication.
+Prepare the Files:
+
+Place the config.cfg file in the same directory as create-vms.sh or adjust paths as needed.
+
+
+execution: ./create-vms-GCP.sh
+
+
+
+---------------------------------------
+#vm deploy-to-vm.sh to be run which will scp and run the file on VM to install and configure nginx and certbot
