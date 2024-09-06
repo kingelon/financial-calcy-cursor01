@@ -1,40 +1,42 @@
 <?php
 // webhook.php
 
-// Get the current user dynamically
-$user = get_current_user();
+// Get the raw POST data from GitHub webhook
+$payload = file_get_contents('php://input');
 
-// Read the actual payload from GitHub webhook
-$payload = json_decode(file_get_contents('php://input'), true);
+// Log the raw payload for debugging purposes
+file_put_contents('/var/www/webhooks/webhook_raw.log', $payload . "\n", FILE_APPEND);
 
-// Prepare log file with a timestamp
-$log_file = "/home/{$user}/webhook/logs/webhook_" . date('Y-m-d_H-i-s') . '.log';
+// Decode the JSON payload into an associative array
+$payload = json_decode($payload, true);
 
 // Debugging output
-file_put_contents($log_file, "Webhook received\n", FILE_APPEND);
+echo "Script executed\n";
 
 if (is_array($payload)) {
-    file_put_contents($log_file, "Payload is an array\n", FILE_APPEND);
+    echo "Payload is an array\n";
 } else {
-    file_put_contents($log_file, "Payload is not an array\n", FILE_APPEND);
+    echo "Payload is not an array\n";
 }
 
 if (isset($payload['ref'])) {
-    file_put_contents($log_file, "Payload ref: " . $payload['ref'] . "\n", FILE_APPEND);
+    echo "Payload ref: " . $payload['ref'] . "\n";
 } else {
-    file_put_contents($log_file, "Payload ref not set\n", FILE_APPEND);
+    echo "Payload ref not set\n";
 }
 
-// Trigger deployment if the push is to the main branch
+// Check if the payload is for the main branch
 if (is_array($payload) && isset($payload['ref']) && $payload['ref'] === 'refs/heads/main') {
-    file_put_contents($log_file, "Triggering deployment\n", FILE_APPEND);
-    shell_exec("/home/{$user}/webhook/bin/deploy-webhook.sh");
+    echo "Triggering deployment\n";
+    // Execute the deployment script
+    shell_exec('/var/www/webhooks/bin/deploy-webhook.sh');
 } else {
-    file_put_contents($log_file, "No deployment triggered\n", FILE_APPEND);
+    echo "No deployment triggered\n";
 }
 
-// Log the payload data
+// Log the payload to a file for debugging
 if (is_array($payload)) {
-    file_put_contents("/home/{$user}/webhook/logs/payload_" . date('Y-m-d_H-i-s') . '.log', print_r($payload, true), FILE_APPEND);
+    file_put_contents('/var/www/webhooks/webhook.log', print_r($payload, true), FILE_APPEND);
+    echo "Payload logged\n";
 }
 ?>
