@@ -14,18 +14,23 @@ error_exit() {
 
 # Function to remove existing files on the VM
 remove_existing_files_on_vm() {
-    echo "Removing old files on the VM..."
-    gcloud compute ssh "$VM_NAME" --zone="$ZONE" --command="rm -rf $REMOTE_DIR/setup-webhook.sh $REMOTE_CONFIG_DIR/*" || error_exit "Failed to remove old files on the VM."
+    echo "Removing old webhook files on the VM..."
+    gcloud compute ssh "$VM_NAME" --zone="$ZONE" --command="rm -rf $REMOTE_DIR/setup-webhook.sh $REMOTE_CONFIG_DIR/* $REMOTE_WEBHOOK_DIR/webhook.php $REMOTE_WEBHOOK_BIN/*" || error_exit "Failed to remove old webhook files on the VM."
 }
 
 # Create the remote directories on the VM
-echo "Creating remote directories on the VM..."
-gcloud compute ssh "$VM_NAME" --zone="$ZONE" --command="mkdir -p $REMOTE_CONFIG_DIR" || error_exit "Failed to create remote directories on the VM."
+echo "Creating webhook directories on the VM..."
+gcloud compute ssh "$VM_NAME" --zone="$ZONE" --command="mkdir -p $REMOTE_CONFIG_DIR $REMOTE_WEBHOOK_DIR/logs $REMOTE_WEBHOOK_BIN" || error_exit "Failed to create webhook directories on the VM."
 
 # Remove existing files before copying new ones
 remove_existing_files_on_vm
 
-# Copy the script and config files from your Windows machine to the VM
+# Copy the webhook and deploy files
+echo "Copying webhook.php and deploy script to the VM..."
+gcloud compute scp "$WEBHOOK_PHP" "$VM_NAME:$REMOTE_WEBHOOK_DIR" --zone="$ZONE" || error_exit "Failed to copy webhook.php to the VM."
+gcloud compute scp "$DEPLOY_WEBHOOK_SCRIPT" "$VM_NAME:$REMOTE_WEBHOOK_BIN" --zone="$ZONE" || error_exit "Failed to copy deploy-webhook.sh to the VM."
+
+# Copy the setup and Nginx config files from your machine to the VM
 echo "Copying setup script to the VM..."
 gcloud compute scp "$SCRIPT_PATH" "$VM_NAME:$REMOTE_DIR" --zone="$ZONE" || error_exit "Failed to copy setup script to the VM."
 

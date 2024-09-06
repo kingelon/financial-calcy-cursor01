@@ -77,12 +77,13 @@ sudo chmod -R 755 "$WEB_ROOT_PATH" 2>&1 | tee -a "$LOG_FILE"
 # Prepare Nginx configuration file without SSL
 NGINX_CONFIG_FILE="/etc/nginx/sites-available/${DOMAIN_NAME}"
 TEMPLATE_FILE="/home/${USERNAME}/config/site-template-no-ssl.conf"
-
+WEBHOOK_PHP_PATH="/home/${USERNAME}/webhook"
 log "Preparing Nginx configuration file without SSL..."
 if [ -f "$TEMPLATE_FILE" ]; then
     sudo mkdir -p /etc/nginx/sites-available
     sudo mkdir -p /etc/nginx/sites-enabled
-    sed "s/{{DOMAIN_NAME}}/${DOMAIN_NAME}/g; s|{{WEB_ROOT_PATH}}|${WEB_ROOT_PATH}|g" "$TEMPLATE_FILE" | sudo tee "$NGINX_CONFIG_FILE" > /dev/null
+    #sed "s/{{DOMAIN_NAME}}/${DOMAIN_NAME}/g; s|{{WEBHOOK_PHP_PATH}}|${WEBHOOK_PHP_PATH}|g" "$TEMPLATE_FILE" | sudo tee "$NGINX_CONFIG_FILE" > /dev/null
+    sed "s/{{DOMAIN_NAME}}/${DOMAIN_NAME}/g; s|{{WEB_ROOT_PATH}}|${WEB_ROOT_PATH}|g; s|{{WEBHOOK_PHP_PATH}}|${WEBHOOK_PHP_PATH}|g" "$TEMPLATE_FILE" | sudo tee "$NGINX_CONFIG_FILE" > /dev/null
 else
     log "Nginx template file not found. Exiting..."
     exit 1
