@@ -1,0 +1,48 @@
+#GCP server working config with SSL and php 
+
+server {
+    server_name firemagestudio.com www.firemagestudio.com;
+
+    root /var/www/financial-calcy-cursor01;
+    index index.html index.htm;
+    
+    # Main location block to serve your website
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    # Location block to handle PHP files (including the webhook)
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;  # Use PHP 8.2 socket
+    }
+
+    # Webhook handler location block
+    location /webhook {
+        alias /var/www/webhooks/webhook.php;
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;  # Ensure this matches the PHP version in use
+    }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/firemagestudio.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/firemagestudio.com/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+}
+
+server {
+    if ($host = www.firemagestudio.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+    if ($host = firemagestudio.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+    listen 80;
+    server_name firemagestudio.com www.firemagestudio.com;
+    return 404; # managed by Certbot
+}
+
+
