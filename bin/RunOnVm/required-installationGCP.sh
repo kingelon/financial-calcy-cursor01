@@ -119,7 +119,8 @@ fi
 
 # Obtain SSL certificate using Certbot for domain (with email from config)
 log "Obtaining SSL certificate with Certbot..."
-if ! sudo certbot --nginx -d "${DOMAIN_NAME}" -d "www.${DOMAIN_NAME}" --email "$EMAIL" --agree-tos | tee -a "$LOG_FILE"; then
+sudo certbot delete --cert-name "${DOMAIN_NAME}"
+if ! sudo certbot --nginx -d "${DOMAIN_NAME}" -d "www.${DOMAIN_NAME}" --email "$EMAIL" --agree-tos --non-interactive --force-renewal | tee -a "$LOG_FILE"; then
     log "Certbot failed to obtain the SSL certificate. Ensure that the domain resolves to the correct IP and try again."
     exit 1
 fi
