@@ -1,0 +1,6 @@
+1. run create-vms-gcp.sh
+# add reserved ip to vm before running 2
+2. run deploy-to-vm.sh
+
+
+
